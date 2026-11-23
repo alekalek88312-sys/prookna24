@@ -22,13 +22,24 @@
 .sticky-mobile{display:none}
 @media(max-width:740px){.navrow .wrap{padding:0 10px}.navbar{padding:7px 10px}.service-grid,.gallery-3{grid-template-columns:1fr}.gallery-3 img{height:260px}.service-hero{padding:46px 0 57px}.sticky-mobile{position:fixed;bottom:0;left:0;right:0;display:flex;gap:10px;background:#fff;z-index:8;box-shadow:0 -4px 22px #082a4540;padding:10px 14px max(10px,env(safe-area-inset-bottom));}.sticky-mobile a{flex:1;min-width:0;text-align:center;border-radius:11px;padding:11px 3px;font-size:12px;font-weight:850;background:#1265b2;color:white;white-space:nowrap}.sticky-mobile a:first-child{background:#ff9b29;color:#12283a}.sticky-mobile a:last-child{background:#229ed9;color:#fff}body{padding-bottom:68px}}
 
-/* External reviews link: no rating or review text is mirrored without verification */
-.avito-reviews{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:24px;align-items:center;border:1px solid #dbe7ef;border-radius:20px;padding:28px;background:#fff;box-shadow:0 9px 26px #092b4410}
-.avito-reviews-copy p{color:#526979;margin:8px 0 22px;max-width:620px}
-.avito-reviews-label{color:#1265b2}
-.avito-reviews-mark{min-height:158px;border-radius:16px;background:linear-gradient(145deg,#e5f3ff,#f2f7fc);display:grid;place-content:center;gap:7px;text-align:center;font-size:20px;font-weight:800;color:#0b2944}
-.avito-reviews-stars{font-size:56px;line-height:1;color:#1265b2}
-@media(max-width:740px){.avito-reviews{grid-template-columns:1fr;padding:20px;gap:16px}.avito-reviews-mark{min-height:100px}.avito-reviews-copy .btn{width:100%}}
+/* Reviews from Avito, manually selected from user-supplied screenshots */
+.reviews-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:23px}
+.reviews-heading h2{margin:4px 0 11px}
+.reviews-heading p{max-width:720px;margin:0}
+.reviews-heading>.btn{flex-shrink:0}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.review-card{display:flex;flex-direction:column;background:#fff;border:1px solid #dce6ef;border-radius:18px;padding:20px;box-shadow:0 7px 23px #092b440c;min-width:0}
+.review-card-top{display:flex;gap:10px;align-items:center}
+.review-card-avatar{display:grid;place-items:center;background:#e4f3ff;border:1px solid #cee4f7;border-radius:50%;width:42px;height:42px;font-size:18px;color:#1265b2;font-weight:900;flex-shrink:0}
+.review-card-person{display:flex;flex-direction:column;min-width:0}.review-card-person strong{overflow-wrap:anywhere}
+.review-card-person span{font-size:12px;color:#607486}
+.review-card-rating{margin:15px 0 6px}.review-stars{color:#e9a008;letter-spacing:2px;font-size:19px}
+.review-no-rating{font-size:12px;color:#536779;background:#f0f5f8;border-radius:20px;padding:5px 9px;display:inline-block}
+.review-card-service{font-size:13px;color:#607486;margin:0 0 13px}
+.review-card blockquote{margin:0 0 17px;line-height:1.6;color:#1c3547;font-size:14px;overflow-wrap:anywhere}
+.review-card-link{margin-top:auto;font-size:13px;color:#1265b2;font-weight:750;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:980px){.reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:740px){.reviews-heading{display:block}.reviews-heading>.btn{display:block;margin-top:17px;text-align:center}.reviews-grid{grid-template-columns:1fr}.review-card{padding:18px}}
 </style><link href="https://alekalek88312-sys.github.io/prookna24/" rel="canonical"/><meta content="website" property="og:type"/><meta content="ru_RU" property="og:locale"/><meta content="ПроОкна24" property="og:site_name"/><meta content="Ремонт окон, остекление балконов в Красноярске — ПроОкна24" property="og:title"/><meta content="ПроОкна24: ремонт и регулировка окон от 500 ₽, изготовление окон ПВХ, остекление балконов, алюминиевые конструкции и веранды в Красноярске. Выезд мастера. ☎ +7 923 335-24-54." property="og:description"/><meta content="https://alekalek88312-sys.github.io/prookna24/" property="og:url"/><meta content="index,follow,max-image-preview:large" name="robots"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "ПроОкна24", "url": "https://alekalek88312-sys.github.io/prookna24/", "telephone": "+79233352454", "email": "Krasnoyarsk-retail@yandex.ru", "description": "Изготовление, монтаж и ремонт окон, остекление балконов и веранд в Красноярске.", "areaServed": [{"@type": "City", "name": "Красноярск"}, {"@type": "Place", "name": "Емельяново, Красноярский край"}], "sameAs": ["https://vk.ru/prooknakrsk", "https://max.ru/channel_ProOkna24", "https://t.me/ProOknaKrasnoyarsk"]}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -54,13 +65,90 @@ document.addEventListener("click",function(event){
 </script>
 <!-- /Yandex.Metrika counter -->
 </head><body><noscript><div><img src="https://mc.yandex.ru/watch/114624151" style="position:absolute;left:-9999px" alt=""></div></noscript><header><div class="wrap top"><a class="logo" href="index.html">Про<span>Окна24</span></a><a class="phone" href="tel:+79233352454">☎ +7 923 335-24-54</a></div><nav aria-label="Основные разделы" class="navrow"><div class="wrap navbar"><a href="remont-okon.html">Ремонт окон</a><a href="okna-pvh.html">Окна ПВХ</a><a href="balkony.html">Балконы</a><a href="alyuminievye-konstrukcii.html">Алюминий</a><a href="osteklenie-verand.html">Веранды</a><a href="index.html#works">Наши работы</a></div></nav></header><main id="top"><div class="hero"><div class="wrap"><div class="eyebrow">Красноярск · Окна и балконы</div><h1>Ремонт окон и остекление балконов в Красноярске</h1><p class="lead">Дует из окна или не закрывается створка? Поможем решить проблему. Ремонт и обслуживание окон ПВХ, изготовление и монтаж окон, остекление балконов и алюминиевых конструкций с выездом мастера.</p><div class="actions"><a class="btn" href="tel:+79233352454">📞 Позвонить мастеру</a><a class="btn secondary" href="#request">Описать задачу</a></div><div class="facts"><div class="fact">✓ Ремонт окон</div><div class="fact">✓ Монтаж и изготовление</div><div class="fact">✓ Балконы и алюминий</div></div></div></div><section id="services"><div class="wrap"><h2>Чем можем помочь</h2><p class="muted">От небольшого ремонта до изготовления и установки конструкций.</p><div class="grid"><a class="tile-link" href="remont-okon.html"><article class="tile"><div class="emoji">🪟</div><h3>Ремонт и регулировка окон</h3><p>Устранение продувания, регулировка створок, обслуживание и ремонт фурнитуры. От 500 ₽.</p><span class="more">Подробнее об услуге →</span></article></a><a class="tile-link" href="okna-pvh.html"><article class="tile"><div class="emoji">🏠</div><h3>Окна ПВХ</h3><p>Изготовление и установка пластиковых окон по размерам объекта.</p><span class="more">Подробнее об услуге →</span></article></a><a class="tile-link" href="balkony.html"><article class="tile"><div class="emoji">🏙️</div><h3>Балконы и лоджии</h3><p>Тёплое и холодное остекление, отделка балконов и лоджий.</p><span class="more">Подробнее об услуге →</span></article></a><a class="tile-link" href="alyuminievye-konstrukcii.html"><article class="tile"><div class="emoji">🚪</div><h3>Алюминиевые конструкции</h3><p>Остекление и монтаж алюминиевых конструкций, в том числе входных групп.</p><span class="more">Подробнее об услуге →</span></article></a><a class="tile-link" href="osteklenie-verand.html"><article class="tile"><div class="emoji">🌿</div><h3>Веранды и террасы</h3><p>Панорамное и нестандартное остекление загородных объектов.</p><span class="more">Подробнее об услуге →</span></article></a></div></div></section><section class="bg"><div class="wrap"><div class="strip"><div><h2>Продувает окно зимой?</h2><p>Ремонт и регулировка пластиковых окон в Красноярске от 500 ₽. Устраняем проблемы с прижимом створки, фурнитурой и уплотнителями. Причину и окончательную стоимость согласуем после осмотра.</p></div><div class="actions"><a class="btn" href="tel:+79233352454">📞 Уточнить стоимость</a><a class="btn secondary" href="remont-okon.html">Подробнее о ремонте</a></div></div></div></section><section><div class="wrap"><h2>Как мы работаем</h2><div class="grid steps"><div class="tile"><h3>Расскажите о задаче</h3><p>Позвоните или опишите проблему с окном в сообщении. Можно приложить фотографии.</p></div><div class="tile"><h3>Уточним детали</h3><p>Обсудим конструкцию, объём работ и дальнейшие действия.</p></div><div class="tile"><h3>Выполним работу</h3><p>Согласуем условия и организуем выполнение заказа.</p></div></div></div></section><section class="bg" id="works"><div class="wrap"><h2>Наши работы</h2><p class="muted">13 реальных фотографий окон, балконов, веранд и нестандартных конструкций. Нажмите на фото, чтобы увеличить.</p><div class="portfolio-grid"><figure class="work-card"><a aria-label="Открыть фото: Панорамное остекление веранды" href="images/veranda-interior.webp" rel="noopener" target="_blank"><img alt="Панорамное остекление веранды — интерьер" loading="lazy" src="images/veranda-interior.webp"/></a><figcaption>Панорамное остекление веранды</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление загородной веранды" href="images/veranda-exterior.webp" rel="noopener" target="_blank"><img alt="Остеклённая веранда загородного дома — снаружи" loading="lazy" src="images/veranda-exterior.webp"/></a><figcaption>Остекление загородной веранды</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление террасы" href="images/terrace-dark.webp" rel="noopener" target="_blank"><img alt="Остекление террасы тёмными профилями" loading="lazy" src="images/terrace-dark.webp"/></a><figcaption>Остекление террасы</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление и обустройство балкона" href="images/balcony-interior-1.webp" rel="noopener" target="_blank"><img alt="Остеклённый балкон — вид изнутри" loading="lazy" src="images/balcony-interior-1.webp"/></a><figcaption>Остекление и обустройство балкона</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Балкон с отделкой и шкафами" href="images/balcony-interior-2.webp" rel="noopener" target="_blank"><img alt="Балкон с системой хранения" loading="lazy" src="images/balcony-interior-2.webp"/></a><figcaption>Балкон с отделкой и шкафами</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление балкона с наружной облицовкой" href="images/balcony-exterior.webp" rel="noopener" target="_blank"><img alt="Балкон с наружной отделкой" loading="lazy" src="images/balcony-exterior.webp"/></a><figcaption>Остекление балкона с наружной облицовкой</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: ПВХ-остекление балкона" href="images/balcony-white.webp" rel="noopener" target="_blank"><img alt="Белое остекление балкона" loading="lazy" src="images/balcony-white.webp"/></a><figcaption>ПВХ-остекление балкона</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Оконно-дверная конструкция" href="images/panoramic-room.webp" rel="noopener" target="_blank"><img alt="Остекление проёма" loading="lazy" src="images/panoramic-room.webp"/></a><figcaption>Оконно-дверная конструкция</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление в фасадной конструкции" href="images/facade-glazing.webp" rel="noopener" target="_blank"><img alt="Остекление фасада" loading="lazy" src="images/facade-glazing.webp"/></a><figcaption>Остекление в фасадной конструкции</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Окна частного дома" href="images/wood-house.webp" rel="noopener" target="_blank"><img alt="Окна в деревянном доме" loading="lazy" src="images/wood-house.webp"/></a><figcaption>Окна частного дома</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Остекление загородного дома" href="images/new-house.webp" rel="noopener" target="_blank"><img alt="Окна строящегося дома" loading="lazy" src="images/new-house.webp"/></a><figcaption>Остекление загородного дома</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Москитная сетка на оконном проёме" href="images/mosquito-screen.webp" rel="noopener" target="_blank"><img alt="Москитная сетка" loading="lazy" src="images/mosquito-screen.webp"/></a><figcaption>Москитная сетка на оконном проёме</figcaption></figure><figure class="work-card"><a aria-label="Открыть фото: Панорамное остекление А-образного дома" href="images/triangle-glazing.webp" rel="noopener" target="_blank"><img alt="Нестандартное треугольное остекление" loading="lazy" src="images/triangle-glazing.webp"/></a><figcaption>Панорамное остекление А-образного дома</figcaption></figure></div><p class="portfolio-note">Фотографии предоставлены «ПроОкна24». Для расчёта похожего проекта свяжитесь с нами.</p><div class="actions"><a class="btn blue" href="tel:+79233352454">Обсудить свой проект</a></div></div></section><section class="bg" id="reviews" aria-labelledby="reviews-title"><div class="wrap">
-  <div class="avito-reviews">
-    <div class="avito-reviews-copy">
-      <div class="eyebrow avito-reviews-label">Отзывы о нашей работе</div>
-      <h2 id="reviews-title">Отзывы клиентов на Авито</h2>
-      <p>Перед заказом можно посмотреть отзывы и оценки в нашем профиле на Авито. Они открываются непосредственно на площадке, где можно ознакомиться с первоисточником.</p>
-      <a class="btn blue" href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" aria-label="Открыть профиль ПроОкна24 на Авито для просмотра отзывов">Посмотреть отзывы на Авито ↗</a>
-    </div>
-    <div class="avito-reviews-mark" aria-hidden="true"><span class="avito-reviews-stars">❝</span><span>Отзывы и оценки<br>на Авито</span></div>
+  <div class="reviews-heading">
+    <div><div class="eyebrow">Отзывы из нашего профиля Авито</div><h2 id="reviews-title">Что говорят клиенты</h2>
+    <p class="muted">Избранные реальные отзывы за 2021–2025 годы. Тексты приведены по скриншотам Авито; оценка показана только там, где она указана. Доступен и отзыв без оценки, по обращению, которое не закончилось заказом.</p></div>
+    <a class="btn blue" href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer">Все отзывы на Авито ↗</a>
+  </div>
+  <div class="reviews-grid" aria-label="Отзывы клиентов">
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Е</span><div class="review-card-person"><strong>Елена</strong><span>22 ноября 2021</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Ремонт окон в холодное время</p>
+      <blockquote>Были проблемы с окнами в холодное время, Александр всё исправил быстро и качественно и по приемлемой цене. Рекомендуем как хорошего специалиста своего дела!)</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">В</span><div class="review-card-person"><strong>Виталий</strong><span>11 ноября 2021</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Ремонт балконной двери</p>
+      <blockquote>Обращался к Александру по ремонту балконной двери. Все подробно показал, рассказал, лишнего ни чего не накручивал. Сделал все очень качественно и быстро! 💪 Отличный специалист, рекомендую!!! 👍🙂</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">С</span><div class="review-card-person"><strong>Сергей Владимирович</strong><span>7 февраля 2022</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Монтаж окон</p>
+      <blockquote>Работа выполнена Александром качественно и в кратчайший срок (2 дня) с полным знанием своего дела! Цена не завышена. Рекомендуем этого мастера!!</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Т</span><div class="review-card-person"><strong>Тимофей</strong><span>22 апреля 2022</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Монтаж окон</p>
+      <blockquote>Делает всё качественно и аккуратно. После монтажа - проверил всё по лазерному уровню. Цена монтажа - адекватная, без лишних накруток. Всё честно и кристально чисто.</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Е</span><div class="review-card-person"><strong>Евгений</strong><span>4 июня 2022</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Установка окон</p>
+      <blockquote>Отличный мастер и собеседник. Всё сделал как договаривались. За адекватную цену. Рекомендую 🤝</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">В</span><div class="review-card-person"><strong>Виталий</strong><span>18 июля 2022</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Монтаж окон и конструкций</p>
+      <blockquote>Отличный мастер, приятный человек. Все сделал быстро и качественно. Работой полностью доволен. Александр профессионал своего дела,и я очень рад, что обратился именно к нему. Рекомендую👍</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Z</span><div class="review-card-person"><strong>za.gorodom24</strong><span>7 сентября 2022</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Изготовление и установка</p>
+      <blockquote>Всё отлично👍 изделия изготовлены вовремя, установка выполнена качественно</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Е</span><div class="review-card-person"><strong>Елена</strong><span>25 января 2023</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Окна и конструкции</p>
+      <blockquote>Быстро и профессионально, спасибо</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">И</span><div class="review-card-person"><strong>иван</strong><span>27 января 2023</span></div></div>
+      <div class="review-card-rating"><span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span></div>
+      <p class="review-card-service">Окна и конструкции</p>
+      <blockquote>приехал, объяснил и сделал все хорошо, данным мастером полностью довольны</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
+
+    <article class="review-card">
+      <div class="review-card-top"><span class="review-card-avatar" aria-hidden="true">Т</span><div class="review-card-person"><strong>Татьяна</strong><span>17 июля 2025</span></div></div>
+      <div class="review-card-rating"><span class="review-no-rating">Без оценки · не договорились</span></div>
+      <p class="review-card-service">Обращение без заказа</p>
+      <blockquote>Александр, мастер своего дела, вежливый и тактичный, всё чётко и честно объясняет, он единственный человек (из тех, к кому обращалась), который предупредил о том, что на мой балкон такую конструкцию ни в коем случае нельзя устанавливать. За это ему большое спасибо!</blockquote>
+      <a href="https://www.avito.ru/brands/i52112544" target="_blank" rel="noopener noreferrer" class="review-card-link" aria-label="Проверить отзывы в профиле Авито">Открыть отзывы на Авито ↗</a>
+    </article>
   </div>
 </div></section><section class="bg" id="request"><div class="wrap"><h2>Связаться с «ПроОкна24»</h2><p class="muted">Заполните форму — откроется почтовое приложение с готовым письмом. Отправка происходит после вашего подтверждения.</p><div class="contact"><div class="panel"><h3>Контакты</h3><p><strong>Телефон</strong><br/><a class="link" href="tel:+79233352454">+7 923 335-24-54</a></p><p><strong>Почта</strong><br/><a class="link" href="mailto:Krasnoyarsk-retail@yandex.ru">Krasnoyarsk-retail@yandex.ru</a></p><p><strong>Сообщества</strong><br/><a class="link" href="https://vk.ru/prooknakrsk" rel="noopener" target="_blank">ВКонтакте</a> · <a class="link" href="https://max.ru/channel_ProOkna24" rel="noopener" target="_blank">MAX</a> · <a class="link" href="https://t.me/ProOknaKrasnoyarsk" rel="noopener" target="_blank">Telegram</a></p><p><strong>Город</strong><br/>Красноярск</p></div><form class="panel" id="leadForm"><h3>Описать задачу</h3><label for="name">Ваше имя</label><input autocomplete="name" id="name" name="name" placeholder="Как к вам обращаться" required=""/><label for="tel">Телефон для связи</label><input autocomplete="tel" id="tel" name="tel" placeholder="+7 ..." required="" type="tel"/><label for="service">Какая услуга нужна?</label><select id="service" name="service"><option>Ремонт окон</option><option>Обслуживание окон</option><option>Окна ПВХ</option><option>Балкон или лоджия</option><option>Алюминиевые конструкции</option><option>Другое</option></select><label for="details">Комментарий</label><textarea id="details" name="details" placeholder="Что случилось или что нужно установить?"></textarea><button class="btn blue" style="margin-top:18px;width:100%" type="submit">Подготовить письмо с заявкой</button><p class="small">Форма не отправляет данные на сервер и не сохраняет их на сайте.</p></form></div></div></section></main><footer><div class="wrap footerinner"><span>© <span id="year"></span> ПроОкна24 · Красноярск</span><span>Окна ПВХ · Алюминий · Балконы · Ремонт</span><a href="sitemap.xml">Карта сайта</a></div></footer><script>document.getElementById('year').textContent=new Date().getFullYear();document.getElementById('leadForm').addEventListener('submit',function(e){e.preventDefault();const v=id=>document.getElementById(id).value.trim();const subject='Заявка с сайта ПроОкна24: '+v('service');const body='Имя: '+v('name')+'\nТелефон: '+v('tel')+'\nУслуга: '+v('service')+'\nКомментарий: '+v('details');location.href='mailto:Krasnoyarsk-retail@yandex.ru?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)});</script><div class="sticky-mobile" aria-label="Быстрая связь"><a href="tel:+79233352454" aria-label="Позвонить ПроОкна24">📞 Звонок</a><a href="https://vk.ru/prooknakrsk" target="_blank" rel="noopener" aria-label="Открыть ПроОкна24 ВКонтакте">ВК</a><a href="https://max.ru/channel_ProOkna24" target="_blank" rel="noopener" aria-label="Открыть канал ПроОкна24 в MAX">MAX</a><a href="https://t.me/ProOknaKrasnoyarsk" target="_blank" rel="noopener" aria-label="Открыть Telegram ПроОкна24">Telegram</a></div></body></html>
