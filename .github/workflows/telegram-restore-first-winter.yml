@@ -1,0 +1,53 @@
+name: Telegram — восстановление согласованного первого зимнего поста
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/telegram-restore-first-winter.yml
+permissions:
+  contents: read
+concurrency:
+  group: telegram-channel-manual-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Restore approved Telegram post once with formatting
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          set -eu
+          git rev-parse --verify HEAD^1 >/dev/null
+          if git cat-file -e HEAD^1:.github/workflows/telegram-restore-first-winter.yml 2>/dev/null; then
+            echo "Restore workflow already present; skipping."
+            exit 0
+          fi
+          if [ "$GITHUB_RUN_ATTEMPT" != "1" ]; then
+            echo "Do not rerun a publication; check the channel."
+            exit 1
+          fi
+          test "$(git hash-object max-posts/approved/first-winter-2026.txt)" = "1e8b3c6ca27119c979f6e10ce936e586f31affe4"
+          python3 - <<'PY'
+          import html
+          import os
+          import re
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          import telegram_channel as tg
+          original = Path("max-posts/approved/first-winter-2026.txt").read_text(encoding="utf-8")
+          formatted = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(original))
+          token = os.environ["TELEGRAM_BOT_TOKEN"].strip()
+          channel_id = tg.check_access(token)
+          result = tg.request(token, "sendMessage", chat_id=channel_id, text=formatted, parse_mode="HTML")
+          message_id = result.get("message_id")
+          if not isinstance(message_id, int) or message_id <= 0:
+              raise RuntimeError("Check the channel; do not repeat publication.")
+          print(f"Telegram confirmed publication: https://t.me/{tg.CHANNEL[1:]}/{message_id}")
+          PY
