@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - max-posts/approved/first-winter-2026.txt
+      - max-posts/approved/first-winter-retry-2026.txt
 
 permissions:
   contents: read
