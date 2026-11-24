@@ -29,9 +29,17 @@ def main():
         raise ValueError("Unexpected MAX channel ID. No post sent.")
 
     chat = request("GET", f"/chats/{channel_id}", token)
-    title = (chat.get("title") or chat.get("name") or "").casefold().replace(" ", "")
-    if "проокна24" not in title:
-        raise ValueError("Destination title not verified as ПроОкна24. No post sent.")
+    title_raw = (chat.get("title") or chat.get("name") or "")
+    title = "".join(ch for ch in title_raw.casefold() if ch.isalnum())
+    channel_link = str(chat.get("link") or "")
+    known_link = "max.ru/channel_prookna24"
+    title_valid = "проокна24" in title
+    link_valid = known_link in channel_link.casefold().rstrip("/")
+    if not (title_valid or link_valid):
+        # Public details only, not bot secrets or message text.
+        print("MAX destination verification: title =", repr(title_raw[:100]))
+        print("MAX destination verification: public link =", repr(channel_link[:200]))
+        raise ValueError("Could not verify this channel by name or canonical link. No post sent.")
     if chat.get("type") not in (None, "channel"):
         raise ValueError("Destination is not a channel. No post sent.")
 
