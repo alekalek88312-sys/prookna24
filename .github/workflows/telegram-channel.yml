@@ -1,0 +1,47 @@
+name: Telegram — проверка и публикация после согласования
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Проверить подключение или опубликовать согласованный пост"
+        required: true
+        type: choice
+        default: check
+        options:
+          - check
+          - publish
+      post_text:
+        description: "Текст согласованного поста"
+        type: string
+      photo_url:
+        description: "Прямая публичная HTTPS-ссылка на фото (необязательно)"
+        type: string
+      confirm:
+        description: "Для отправки ввести ПУБЛИКОВАТЬ"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-channel-manual-publish
+  cancel-in-progress: false
+
+jobs:
+  telegram_channel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Download repository code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Execute manual Telegram action
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MODE: ${{ inputs.mode }}
+          TELEGRAM_POST_TEXT: ${{ inputs.post_text }}
+          TELEGRAM_PHOTO_URL: ${{ inputs.photo_url }}
+          TELEGRAM_CONFIRM: ${{ inputs.confirm }}
+        run: python3 scripts/telegram_channel.py
