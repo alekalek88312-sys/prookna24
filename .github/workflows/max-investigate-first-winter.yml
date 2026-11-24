@@ -1,0 +1,81 @@
+name: MAX — диагностика исчезнувшего поста (только чтение)
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/max-investigate-first-winter.yml
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read MAX post state, permissions and latest removal events
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
+        run: |
+          python3 - <<'PY'
+          import os, sys, urllib.parse, datetime
+          sys.path.insert(0, "scripts")
+          from max_channel import request, DEFAULT_CHANNEL_ID
+          token = os.environ["MAX_BOT_TOKEN"].strip()
+          cid = os.environ.get("MAX_CHANNEL_ID", "").strip() or DEFAULT_CHANNEL_ID
+          if cid != DEFAULT_CHANNEL_ID:
+              raise RuntimeError("Unexpected channel ID")
+          old = "mid.ffffb9f18c202f6301a20e97f38e0d55"
+          new = "mid.ffffb9f18c202f6301a20ed2a3360d55"
+          def get(path, label):
+              try:
+                  return request("GET", path, token)
+              except Exception as e:
+                  print(label + " unavailable:", str(e) if str(e).startswith("MAX API responded with HTTP ") else type(e).__name__)
+                  return None
+          for mid, label in [(old,"Original post"),(new,"Restored post")]:
+              obj = get("/messages/" + urllib.parse.quote(mid, safe=""), label)
+              if obj is not None:
+                  m = obj.get("message", obj)
+                  print(label + " returned:", (m.get("body") or {}).get("mid") == mid)
+          me = get("/me", "Bot identity") or {}
+          admin_data = get(f"/chats/{cid}/members/admins", "Admin list") or {}
+          admins = admin_data.get("members")
+          if isinstance(admins, list):
+              print("Administrator count:", len(admins))
+              print("Administrator bot count:", sum(bool(a.get("is_bot")) for a in admins))
+              for a in admins:
+                  if a.get("user_id") == me.get("user_id") and me.get("user_id") is not None:
+                      p = a.get("permissions")
+                      print("Publishing bot permissions available:", isinstance(p,list))
+                      if isinstance(p,list):
+                          print("Publishing bot explicit delete right:", any(x in ("delete","delete_message") for x in p))
+          else:
+              admins = []
+          subs = get("/subscriptions", "Webhook subscriptions")
+          if subs is None or not isinstance(subs.get("subscriptions"), list):
+              print("Cannot establish webhook state; skip polling.")
+          elif subs["subscriptions"]:
+              print("Webhook configured; skip polling to avoid interference.")
+          else:
+              q = urllib.parse.urlencode({"timeout":0,"limit":100,"types":"message_removed"})
+              events = get("/updates?" + q, "Latest removal events")
+              if events is not None and isinstance(events.get("updates"), list):
+                  matches = [e for e in events["updates"] if e.get("update_type") == "message_removed" and str(e.get("chat_id")) == cid and (e.get("message_id") == old or e.get("post_id") == old)]
+                  print("Matching original-post removal events:", len(matches))
+                  for e in matches:
+                      uid = e.get("user_id")
+                      if uid is None:
+                          role = "not supplied"
+                      elif uid == me.get("user_id"):
+                          role = "publishing bot"
+                      else:
+                          a = next((a for a in admins if a.get("user_id") == uid), None)
+                          role = ("channel owner" if a.get("is_owner") else "another administrator bot" if a.get("is_bot") else "another administrator") if a else "unidentified account"
+                      print("Removal actor category:", role)
+                      ts = e.get("timestamp")
+                      if isinstance(ts,(int,float)):
+                          print("Removal UTC:", datetime.datetime.fromtimestamp(ts/1000,datetime.timezone.utc).isoformat())
+          PY
