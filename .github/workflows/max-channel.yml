@@ -1,0 +1,46 @@
+name: MAX — проверка и публикация после согласования
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Проверить подключение (без публикации) или опубликовать"
+        required: true
+        type: choice
+        default: check
+        options:
+          - check
+          - publish
+      post_text:
+        description: "Текст согласованного поста (только для publish)"
+        required: false
+        type: string
+      confirm:
+        description: "Для отправки ввести ПУБЛИКОВАТЬ; иначе публикации не будет"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: max-channel-manual-publish
+  cancel-in-progress: false
+
+jobs:
+  max_channel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Download approved repository code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Execute manual MAX action
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
+          MAX_MODE: ${{ inputs.mode }}
+          MAX_POST_TEXT: ${{ inputs.post_text }}
+          MAX_CONFIRM: ${{ inputs.confirm }}
+        run: python3 scripts/max_channel.py
