@@ -1,0 +1,29 @@
+name: MAX — одобренный первый зимний пост
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - max-posts/approved/first-winter-2026.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: max-first-winter-post-2026
+  cancel-in-progress: false
+
+jobs:
+  publish_approved:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read only the approved files
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Publish exactly the approved text to the verified MAX channel
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
+        run: python3 scripts/max_approved_first_post.py
