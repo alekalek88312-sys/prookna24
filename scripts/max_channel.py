@@ -11,6 +11,8 @@ import urllib.parse
 import urllib.request
 
 ROOT = "https://platform-api2.max.ru"
+# Existing channel ID returned by MAX in the successful manual check (#2).
+DEFAULT_CHANNEL_ID = "-77027887534237"
 
 def request(method, path, token, payload=None):
     url = ROOT + path
@@ -32,7 +34,7 @@ def request(method, path, token, payload=None):
 def main():
     token = os.getenv("MAX_BOT_TOKEN", "").strip()
     mode = os.getenv("MAX_MODE", "check").strip()
-    channel_id = os.getenv("MAX_CHANNEL_ID", "").strip()
+    channel_id = os.getenv("MAX_CHANNEL_ID", "").strip() or DEFAULT_CHANNEL_ID
     if not token:
         raise ValueError("Repository secret MAX_BOT_TOKEN is missing.")
     if mode == "check":
@@ -41,6 +43,8 @@ def main():
         if channel_id:
             if not re.fullmatch(r"-?\d{1,20}", channel_id):
                 raise ValueError("MAX_CHANNEL_ID must be a numeric identifier")
+            chat = request("GET", f"/chats/{channel_id}", token)
+            print("Channel reachable; title:", chat.get("title") or chat.get("name") or "(not returned)")
             member = request("GET", f"/chats/{channel_id}/members/me", token)
             if member.get("success") is False:
                 raise RuntimeError("Bot membership request returned an error")
@@ -70,6 +74,11 @@ def main():
         raise ValueError("Set valid numeric MAX_CHANNEL_ID as a repository secret")
     if not text or len(text) > 4000:
         raise ValueError("The post must contain 1–4000 characters")
+    # Read-only destination validation before publishing; do not send if the target differs.
+    chat = request("GET", f"/chats/{channel_id}", token)
+    title = (chat.get("title") or chat.get("name") or "").casefold().replace(" ", "")
+    if "проокна24" not in title:
+        raise ValueError("Destination title is not ПроОкна24 or cannot be verified. Post not sent.")
     result = request("POST", "/messages?" + urllib.parse.urlencode({"chat_id": channel_id}),
                      token, {"text": text})
     if result.get("success") is False or not isinstance(result.get("message"), dict):
