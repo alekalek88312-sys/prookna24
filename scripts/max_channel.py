@@ -3,7 +3,9 @@
 import json
 import os
 import re
+import ssl
 import sys
+from pathlib import Path
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -19,7 +21,9 @@ def request(method, path, token, payload=None):
         "Accept": "application/json",
     })
     try:
-        with urllib.request.urlopen(req, timeout=35) as res:
+        ca_file = Path(__file__).resolve().parent / "certs" / "russian_trusted_ca.pem"
+        context = ssl.create_default_context(cafile=str(ca_file))
+        with urllib.request.urlopen(req, timeout=35, context=context) as res:
             return json.loads(res.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         # Do not print response bodies or credentials; API error body may contain sensitive details.
