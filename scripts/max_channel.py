@@ -35,9 +35,11 @@ def main():
         bot = request("GET", "/me", token)
         print("MAX API authentication OK. Bot name:", bot.get("first_name") or bot.get("name") or "(unknown)")
         if channel_id:
-            if not re.fullmatch(r"-?\\d{1,20}", channel_id):
+            if not re.fullmatch(r"-?\d{1,20}", channel_id):
                 raise ValueError("MAX_CHANNEL_ID must be a numeric identifier")
-            request("GET", f"/chats/{channel_id}/members/me", token)
+            member = request("GET", f"/chats/{channel_id}/members/me", token)
+            if member.get("success") is False:
+                raise RuntimeError("Bot membership request returned an error")
             print("Configured channel membership is accessible.")
         else:
             # Development-only, one short read. Do not print events or user/message data.
@@ -60,7 +62,7 @@ def main():
     confirmation = os.getenv("MAX_CONFIRM", "")
     if confirmation != "ПУБЛИКОВАТЬ":
         raise ValueError("To publish, explicitly enter ПУБЛИКОВАТЬ")
-    if not re.fullmatch(r"-?\\d{1,20}", channel_id):
+    if not re.fullmatch(r"-?\d{1,20}", channel_id):
         raise ValueError("Set valid numeric MAX_CHANNEL_ID as a repository secret")
     if not text or len(text) > 4000:
         raise ValueError("The post must contain 1–4000 characters")
