@@ -1,0 +1,48 @@
+name: Telegram — согласованный первый зимний пост
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/telegram-first-winter.yml
+permissions:
+  contents: read
+concurrency:
+  group: telegram-channel-manual-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Publish the approved post once
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MODE: publish
+          TELEGRAM_CONFIRM: ПУБЛИКОВАТЬ
+          TELEGRAM_POST_TEXT: |-
+            🪟 Дует из пластикового окна? Не спешите его менять!
+            
+            Если возле подоконника холодно или створка плохо закрывается, причина может быть в регулировке фурнитуры, изношенном уплотнителе или монтажном шве.
+            
+            Перевод в «зимний режим» помогает не всегда. Слишком сильный прижим может ускорить износ уплотнителя. Часто достаточно регулировки или ремонта.
+            
+            🔧 ПроОкна24 · Красноярск
+            Ремонт, регулировка и обслуживание окон от 500 ₽.
+            📞 +7 923 335-24-54
+            
+            🌐 Сайт — https://pro-okna-24.ru/
+            ✈️ Telegram — https://t.me/ProOknaKrsk
+            🔵 ВКонтакте — https://vk.ru/prooknakrsk
+            
+            Подписывайтесь. Здесь будут советы по уходу за окнами и реальные примеры наших работ.
+        run: |
+          git rev-parse --verify HEAD^1 >/dev/null
+          if git cat-file -e HEAD^1:.github/workflows/telegram-first-winter.yml 2>/dev/null; then
+            echo "The approved workflow was already present. Skipping."
+            exit 0
+          fi
+          python3 scripts/telegram_channel.py
