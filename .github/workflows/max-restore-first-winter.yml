@@ -1,0 +1,88 @@
+name: MAX — восстановление первого зимнего поста по разрешению владельца
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/max-restore-first-winter.yml
+permissions:
+  contents: read
+concurrency:
+  group: max-first-winter-post-2026
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Restore exact approved post only if absent
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
+        run: |
+          set -eu
+          git rev-parse --verify HEAD^1 >/dev/null
+          if git cat-file -e HEAD^1:.github/workflows/max-restore-first-winter.yml 2>/dev/null; then
+            echo "Restore workflow already present; skipping."
+            exit 0
+          fi
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import re
+          import sys
+          import urllib.parse
+          sys.path.insert(0, "scripts")
+          import max_approved_first_post as original
+          from max_channel import request
+          text = original.APPROVED_PATH.read_text(encoding="utf-8").rstrip("\n")
+          if hashlib.sha256(text.encode("utf-8")).hexdigest() != original.APPROVED_SHA256:
+              raise RuntimeError("Approved text hash mismatch.")
+          token = os.environ["MAX_BOT_TOKEN"].strip()
+          cid = os.environ.get("MAX_CHANNEL_ID", "").strip() or original.EXPECTED_CHANNEL_ID
+          if cid != original.EXPECTED_CHANNEL_ID:
+              raise RuntimeError("Unexpected channel ID.")
+          chat = request("GET", f"/chats/{cid}", token)
+          title = "".join(c for c in str(chat.get("title") or chat.get("name") or "").casefold() if c.isalnum())
+          link = str(chat.get("link") or "").casefold().rstrip("/")
+          if chat.get("type") not in (None, "channel") or not ("проокна24" in title or "max.ru/channel_prookna24" in link):
+              raise RuntimeError("Could not verify channel.")
+          old_mid = "mid.ffffb9f18c202f6301a20e97f38e0d55"
+          def normalized(s):
+              return re.sub(r"\s+", " ", s.replace("**", "").replace("\ufe0f", "")).strip()
+          def recent():
+              data = request("GET", "/messages?" + urllib.parse.urlencode({"chat_id": cid, "count": 100}), token)
+              if not isinstance(data.get("messages"), list):
+                  raise RuntimeError("Could not verify recent posts.")
+              return data["messages"]
+          def matching(items):
+              return [m for m in items if (m.get("body") or {}).get("mid") == old_mid or normalized((m.get("body") or {}).get("text") or "") == normalized(text)]
+          def report(m):
+              print("Post ID:", (m.get("body") or {}).get("mid") or "(not supplied)")
+              print("Post link:", m.get("url") or m.get("link") or "(not supplied)")
+          before = recent()
+          print("Original message ID present in latest posts before restoration:", any((m.get("body") or {}).get("mid") == old_mid for m in before))
+          matches = matching(before)
+          if matches:
+              print("Approved post already present; no duplicate created.")
+              for m in matches:
+                  report(m)
+          else:
+              print("Approved post absent from recent messages. Restoring.")
+              data = request("POST", "/messages?" + urllib.parse.urlencode({"chat_id": cid}), token, {"text": text, "format": "markdown"})
+              m = data.get("message")
+              if not isinstance(m, dict) or not (m.get("body") or {}).get("mid"):
+                  raise RuntimeError("Publication response not confirmed; do not retry blindly.")
+              print("MAX confirmed restored publication.")
+              report(m)
+              mid = m["body"]["mid"]
+              try:
+                  after = recent()
+                  print("Restored message visible in recent messages:", any((x.get("body") or {}).get("mid") == mid for x in after))
+              except Exception as e:
+                  print("Readback unavailable:", type(e).__name__)
+          PY
