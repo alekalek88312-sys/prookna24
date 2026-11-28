@@ -1,0 +1,153 @@
+name: Зимний пост № 3 — согласованная публикация в Telegram и MAX
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/winter-post-03-2026.yml
+permissions:
+  contents: read
+env:
+  APPROVED_POST: |-
+    🥶 **Можно ли ремонтировать пластиковые окна зимой?**
+    
+    Конечно! Многие неисправности можно устранить, не дожидаясь весны.
+    
+    Более того, некоторые дефекты оконных конструкций можно выявить только в холодное время года, когда разница температур внутри и снаружи помещения наиболее заметна.
+    
+    Это касается продувания, промерзания, нарушения герметичности и дефектов монтажных швов, которые в тёплое время года могут никак себя не проявлять.
+    
+    🔧 **Что можно сделать в зимний период:**
+    
+    ✅ Отрегулировать оконные створки.
+    
+    ✅ Заменить изношенный уплотнитель.
+    
+    ✅ Отремонтировать оконную фурнитуру.
+    
+    ✅ Устранить причины продувания и промерзания.
+    
+    ✅ Заменить повреждённый стеклопакет.
+    
+    💡 **Зима — отличное время для диагностики окон и выявления скрытых дефектов.**
+    
+    Не стоит терпеть холод и сквозняки до весны. Своевременное обслуживание помогает продлить срок службы окон и сохранить тепло в доме.
+    
+    🔧 **ПроОкна24 — Красноярск**
+    
+    Работаем с пластиковыми и алюминиевыми конструкциями.
+    
+    Ремонт и обслуживание окон от 500 ₽.
+    
+    📞 +7 923 335-24-54
+    
+    🌐 https://pro-okna-24.ru/
+    
+    Обращайтесь — поможем решить проблему!
+    
+    Подписывайтесь на канал и делитесь полезной информацией со знакомыми!
+jobs:
+  telegram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    concurrency:
+      group: telegram-channel-manual-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Publish approved text once in Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          set -eu
+          git rev-parse --verify HEAD^1 >/dev/null
+          if git cat-file -e HEAD^1:.github/workflows/winter-post-03-2026.yml 2>/dev/null; then
+            echo "Workflow already present; skipping."
+            exit 0
+          fi
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          python3 - <<'PY'
+          import os, sys, re, html
+          sys.path.insert(0, "scripts")
+          import telegram_channel as tg
+          token = os.environ["TELEGRAM_BOT_TOKEN"].strip()
+          text = os.environ["APPROVED_POST"]
+          assert 0 < len(text) <= 4096
+          formatted = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(text))
+          channel_id = tg.check_access(token)
+          msg = tg.request(token, "sendMessage", chat_id=channel_id, text=formatted, parse_mode="HTML", link_preview_options={"is_disabled": True})
+          mid = msg.get("message_id")
+          if not isinstance(mid, int) or mid <= 0:
+              raise RuntimeError("Publication unconfirmed; check channel before retry.")
+          print(f"Telegram confirmed publication: https://t.me/{tg.CHANNEL[1:]}/{mid}")
+          print("Exact text returned:", msg.get("text") == text.replace("**", ""))
+          PY
+  max:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    concurrency:
+      group: max-first-winter-post-2026
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Publish approved text once in MAX
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
+        run: |
+          set -eu
+          git rev-parse --verify HEAD^1 >/dev/null
+          if git cat-file -e HEAD^1:.github/workflows/winter-post-03-2026.yml 2>/dev/null; then
+            echo "Workflow already present; skipping."
+            exit 0
+          fi
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          python3 - <<'PY'
+          import os, sys, re, urllib.parse
+          sys.path.insert(0, "scripts")
+          from max_channel import request, DEFAULT_CHANNEL_ID
+          token = os.environ["MAX_BOT_TOKEN"].strip()
+          cid = os.environ.get("MAX_CHANNEL_ID", "").strip() or DEFAULT_CHANNEL_ID
+          if cid != DEFAULT_CHANNEL_ID:
+              raise RuntimeError("Unexpected channel ID")
+          chat = request("GET", f"/chats/{cid}", token)
+          title = "".join(c for c in str(chat.get("title") or chat.get("name") or "").casefold() if c.isalnum())
+          link = str(chat.get("link") or "").casefold().rstrip("/")
+          if chat.get("type") not in (None, "channel") or not ("проокна24" in title or "max.ru/channel_prookna24" in link):
+              raise RuntimeError("Could not verify channel")
+          text = os.environ["APPROVED_POST"]
+          assert 0 < len(text) <= 4000
+          query = urllib.parse.urlencode({"chat_id": cid, "count": 100})
+          def recent():
+              data = request("GET", "/messages?" + query, token)
+              if not isinstance(data.get("messages"), list):
+                  raise RuntimeError("Could not verify recent messages")
+              return data["messages"]
+          def normalize(s):
+              return re.sub(r"\s+", " ", s.replace("**", "").replace("\ufe0f", "")).strip()
+          def report(m):
+              print("MAX post ID:", (m.get("body") or {}).get("mid") or "(not supplied)")
+              print("MAX post link:", m.get("url") or m.get("link") or "(not supplied)")
+          matches = [m for m in recent() if normalize((m.get("body") or {}).get("text") or "") == normalize(text)]
+          if matches:
+              print("MAX approved post already present; no duplicate created.")
+              report(matches[0])
+          else:
+              data = request("POST", "/messages?" + urllib.parse.urlencode({"chat_id": cid}), token, {"text": text, "format": "markdown"})
+              msg = data.get("message")
+              if not isinstance(msg, dict) or not (msg.get("body") or {}).get("mid"):
+                  raise RuntimeError("Publication unconfirmed; do not retry blindly.")
+              print("MAX confirmed publication.")
+              report(msg)
+              mid = msg["body"]["mid"]
+              print("Exact text returned:", normalize(msg["body"].get("text") or "") == normalize(text))
+              try:
+                  print("MAX post visible in recent messages:", any((m.get("body") or {}).get("mid") == mid for m in recent()))
+              except Exception as e:
+                  print("MAX readback unavailable:", type(e).__name__)
+          PY
